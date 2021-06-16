@@ -1,4 +1,4 @@
-#NumpySLlib
+# NumpySLlib
 
 A collection of hand-made statistical learning algorithms built with numpy.  
 this includes for:
@@ -8,9 +8,9 @@ this includes for:
 - clustering
 ___
 
-##Provided Functions
+## Provided Functions
 
-###Cross-validation:
+### Cross-validation:
 
 * *cross_valid_F1_macro(Data, labels, k, model)*: f1 cross 
   validation macro average
@@ -21,7 +21,7 @@ ___
 * *cross_valid_A_micro(Data, labels, k, model)*: accuracy cross
   validation micro average  
   
-####parameters:
+#### parameters:
 
 - Data: numpy bi-dimensional array
 - label: numpy array
@@ -30,7 +30,7 @@ ___
     methods (ex. sklearn models)
 
 
-###feature manipulation
+### feature manipulation
 
 these function transform the feature with index *column_index* of 
 the data provided with the parameter *to_normalize*.
@@ -51,7 +51,7 @@ Values like min, max or mean of the feature must be provided
   ( upper bounds the data to b), "down" (lower bounds data to b) or
   "up_down" (both upper and lower bounds)
 
-###feature selection
+### feature selection
 
 * *backward_feature_elimination(data, model, labels, min_features)* :
   backward eliminate feature untill reached *min_features* (if setted), or
@@ -60,9 +60,9 @@ Values like min, max or mean of the feature must be provided
  *k* features using forward insertion
 
 
-###clustering
+### clustering
 
-####clustering algorithms
+#### clustering algorithms
 
 * *k_means(data, k, n_iter)*: the most known clustering algorithm, it took a bidimensional
   numpy array *data* and a number *k* and it cluster data into k subset.
@@ -79,7 +79,7 @@ Values like min, max or mean of the feature must be provided
   * *cut(level)*: cut the dendrogram at *level* and return the labeled data.
   * *get_k_cluster(k)*: cut the dendrogram to have *k* clusters and returns the labeled dataset
 
-####clustering valutation & validation
+#### clustering valutation & validation
 
 * *rss(X, k, labels)*: calculate the sum of the distances between the data *X*
    and the centroids of the *k* clusters. labels is an array of the cluster labels

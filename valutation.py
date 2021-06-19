@@ -2,6 +2,14 @@ import numpy as np
 import random as rnd
 
 
+def class_matrix(labels, predictions):
+    n_class = np.maximum(np.max(labels), np.max(predictions)) + 1
+    ret = np.zeros((n_class, n_class))
+    for i in range(labels.shape[0]):
+        ret[predictions[i], labels[i]] += 1
+    return ret
+
+
 def confusion_matrix(labels, predictions):  # 00=TP  10=FN  01=FP  11=TN
     n_sample = labels.shape[0]
     cnf_matrix = np.zeros((2, 2))

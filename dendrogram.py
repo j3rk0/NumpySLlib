@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 
+
 # calcola la distanza euclidea tra cluster
 def euclidean_distance(x, y):
     sum_sq = np.sum(np.square(x - y))
@@ -57,48 +58,15 @@ def clust_distance_avg(clust1, clust2):
 
 # %%
 
-# struttura dati che punta a due nodi figli
-class node:
-
-    def __init__(self, left_node, right_node):
-        self.lx = left_node
-        self.dx = right_node
-        self.level = left_node.get_level() + 1
-
-    def get_left(self):
-        return self.lx
-
-    def get_right(self):
-        return self.dx
-
-    def get_content(self):  # ricorsivamente raccoglie i dati da tutti i figli
-        return np.vstack((self.lx.get_content(), self.dx.get_content()))
-
-    def get_level(self):
-        return self.level
-
-
-# ha gli stessi metodi del nodo solo che contiene i dati al posto dei figli
-class leaf:
-    def __init__(self, data_point):
-        self.data = np.array([data_point])
-        self.level = 0
-
-    def get_content(self):
-        return self.data
-
-    def get_level(self):
-        return self.level
-
-
-class dendrogram:
+# noinspection PyTypeChecker
+class Dendrogram:
 
     def __init__(self, data_points):
         self.num_leaves = data_points.shape[0]  # numero di foglie
         self.top_level = []  # stack dei cluster al livello più alto
         self.levels = 0  # livello più alto
         for i in range(self.num_leaves):  # inserisce nella lista tutte le foglie
-            self.top_level.append(leaf(data_points[i]))
+            self.top_level.append(self.leaf(data_points[i]))
 
     def grow_a_level(self, method="max", k=None):
         stack = []
@@ -124,7 +92,7 @@ class dendrogram:
                     nearest = cluster
                     nearest_distance = distance
             # aggiunge allo stack temporaneo il nodo contenete i due cluster
-            stack.append(node(curr, nearest))
+            stack.append(self.node(curr, nearest))
             self.top_level.remove(nearest)
             # se abbiamo raggiunto k cluster fermati
             if k is not None and (len(self.top_level) + len(stack)) <= k:
@@ -205,3 +173,35 @@ class dendrogram:
             i += 1  # aggiorna etichetta
 
         return res
+
+    # struttura dati che punta a due nodi figli
+    class node:
+
+        def __init__(self, left_node, right_node):
+            self.lx = left_node
+            self.dx = right_node
+            self.level = left_node.get_level() + 1
+
+        def get_left(self):
+            return self.lx
+
+        def get_right(self):
+            return self.dx
+
+        def get_content(self):  # ricorsivamente raccoglie i dati da tutti i figli
+            return np.vstack((self.lx.get_content(), self.dx.get_content()))
+
+        def get_level(self):
+            return self.level
+
+    # ha gli stessi metodi del nodo solo che contiene i dati al posto dei figli
+    class leaf:
+        def __init__(self, data_point):
+            self.data = np.array([data_point])
+            self.level = 0
+
+        def get_content(self):
+            return self.data
+
+        def get_level(self):
+            return self.level

@@ -10,6 +10,12 @@ ___
 
 ## Provided Functions
 
+### split
+
+* *train_test_split(X, y, n_train)*: split a dataset in train and test. n_train is the percentage of data in train 
+  set (es 0.75 = 75%). return in form x_train, y_train, x_test, y_test
+* *k_fold(X,y,k)*: return a list of k subsets of X and one of subsets of y. the size of each folds differ at most of size 1 from the others
+
 ### Cross-validation:
 
 * *cross_valid_F1_macro(Data, labels, k, model)*: f1 cross 
@@ -89,3 +95,11 @@ Values like min, max or mean of the feature must be provided
 * *silhouette(data, label)*: calculate the silhouette score of a cluster, data is the
 dataset and label is an array with cluster labels
 
+### Decision Tree Classifier
+
+this algorith is provided as a class.
+there are provided 3 main methods
+
+* *fit(data, labels, level)* : fit the tree, optional parameter level it's to set max tree height
+* *predict(data)* : return a numpy array of predictions
+* *print_tree()* : print the structure of the decision tree

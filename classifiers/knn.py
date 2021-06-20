@@ -24,7 +24,19 @@ class KNN:
             return self.regression(data)
 
     def regression(self, data):
-        return
+        res = []
+        for x in data:
+            neig = self.find_neighbour(x)
+            if self.method == "standard":
+                res.append(np.mean(self.labels[neig]))
+            else:
+                w_tot=r_sum=0
+                for n in neig:
+                    distance = self.__euclidean_distance(self.data[n],x)
+                    r_sum += self.labels[n] / (self.smoothing + distance)
+                    w_tot += 1 / (self.smoothing + distance)
+                res.append(r_sum / w_tot)
+        return res
 
     def classify(self, data):
         res = []

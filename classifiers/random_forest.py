@@ -6,14 +6,18 @@ from classifiers.decision_tree import gini, entropy, DecisionTree
 
 class RandomForest:
 
-    def __init__(self, n_trees, max_height=2, min_features=None, min_data=None, errfun=None, n_processes=1):
+    def __init__(self, n_trees, max_height=2, min_err=.0, mode="classification", min_features=None, min_data=None,
+                 errfun=None, n_processes=1, weighted=True):
         self.n_trees = n_trees
+        self.mode = mode
+        self.min_err = min_err
         self.max_height = max_height
         self.min_data = min_data
         self.min_features = min_features
         self.forest = []
         self.n_classes = None
         self.errfun = errfun
+        self.weighted = weighted
 
         self.n_processes = n_processes
         self.train_data = None
@@ -34,15 +38,38 @@ class RandomForest:
         self.train_data = self.train_labels = None  # clean cache
 
     def query_forest(self, x):
-        bag_result = np.zeros(self.n_classes)
-
+        bag_result = None
+        if self.mode == "classification":
+            bag_result = np.zeros(self.n_classes)
+        result = 0
+        err_tot = 0
         for classifier in self.forest:
             tree = classifier[0]
             features_map = classifier[1]
             curr = x[features_map]
             curr_pred = tree.query_tree(curr)
-            bag_result[curr_pred] += 1
-        return np.argmax(bag_result)
+            curr_err = tree.query_tree(curr, returnErr=True)
+
+            if self.mode == "classification":
+                if self.weighted:
+                    bag_result[curr_pred] += 1 / (curr_err + .1)
+                else:
+                    bag_result[curr_pred] += 1
+                result = np.argmax(bag_result)
+            else:  # regression
+                if self.weighted:
+                    result += curr_pred / (curr_err + .1)
+                    err_tot += 1 / (curr_err + .1)
+                else:
+                    result += curr_pred
+
+        if self.mode == "regression":
+            if self.weighted:
+                result /= err_tot
+            else:
+                result /= self.n_trees
+
+        return result
 
     def predict(self, data):
         result = []
@@ -67,11 +94,13 @@ class RandomForest:
         y = labels[tree_sample_map]
 
         # random error function (if not set)
-        if self.errfun is None:
-            function = np.random.choice([gini, entropy], 1)[0]
+        if self.mode == "regression":
+            function = "mse"
+        elif self.errfun is None:
+            function = np.random.choice(["gini", "entropy"], 1)[0]
         else:
             function = self.errfun
 
-        tree = DecisionTree(function, self.max_height)
+        tree = DecisionTree(errfun=function, mode=self.mode, max_height=self.max_height, min_err=self.min_err)
         tree.fit(x, y)
         return tree, tree_features_map

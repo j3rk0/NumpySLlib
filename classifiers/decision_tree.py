@@ -1,6 +1,17 @@
 import numpy as np
 
 
+def mse(labels):
+    if len(labels) == 0:
+        return 0
+
+    pred = np.mean(labels)
+    err = 0
+    for l in labels:
+        err += np.square(l - pred)
+    return err / len(labels)
+
+
 def gini(labels):
     label, count = np.unique(labels, return_counts=True)
     prob = count / len(labels)
@@ -16,9 +27,15 @@ def entropy(labels):
 
 class DecisionTree:
 
-    def __init__(self, errfun=gini, max_height=None, min_err=.0):
+    def __init__(self, mode="classification", errfun="gini", max_height=None, min_err=.0):
         self.root = None
-        self.errfun = errfun
+        self.mode = mode
+        if errfun == "gini":
+            self.errfun = gini
+        elif errfun == "entropy":
+            self.errfun = entropy
+        elif errfun == "mse":
+            self.errfun = mse
         self.height = 0
         self.max_height = max_height
         self.min_err = min_err
@@ -63,7 +80,15 @@ class DecisionTree:
         self.shape = data.shape[1]
         if np.all(labels == labels[0]):  # if all element are of the same class let's build a leaf
             self.height = max(level, self.height)
-            new_node = self.DecNode(True, label=labels[0])
+            new_node = self.DecNode(True, label=labels[0], err=0)
+        elif self.max_height is not None and level > self.max_height:  # reached max height
+            self.height=self.max_height
+            err = self.errfun(labels)
+            if self.mode == "classification":
+                res = np.argmax(np.bincount(labels))
+            else:
+                res = np.mean(labels)
+            return self.DecNode(True, label=res, err=err)
         else:
             feat, tresh, err = self.__findSplit(data, labels)  # find the optimal split
 
@@ -73,15 +98,17 @@ class DecisionTree:
             right_data = data[splitmap, :]
             right_labels = labels[splitmap]
 
+            if self.mode == "classification":
+                left_label = np.argmax(np.bincount(left_labels))
+                right_label = np.argmax(np.bincount(right_labels))
+            else:
+                left_label = np.mean(left_labels)
+                right_label = np.mean(right_labels)
+
             if len(left_labels) == 0:  # left partition is empty => build a leaf
-                new_node = self.DecNode(True, label=np.argmax(np.bincount(right_labels)))
+                new_node = self.DecNode(True, label=right_label, err=0)
             elif len(right_labels) == 0:  # right partition is empty => build a leaf
-                new_node = self.DecNode(True, label=np.argmax(np.bincount(left_labels)))
-            elif self.max_height is not None and level == self.max_height or err <= self.min_err:  # pruning
-                self.height = max(level + 1, self.height)  # set tree height
-                new_node = self.DecNode(False, feature=feat, tresh=tresh)
-                new_node.left = self.DecNode(True, label=np.argmax(np.bincount(left_labels)))
-                new_node.right = self.DecNode(True, label=np.argmax(np.bincount(right_labels)))
+                new_node = self.DecNode(True, label=left_label, err=0)
             else:  # build recursivly two node
                 new_node = self.DecNode(False, feature=feat, tresh=tresh, err=err)
                 new_node.left = self.fit(left_data, left_labels, level + 1)
@@ -104,7 +131,7 @@ class DecisionTree:
         else:
             print(buff, " THEN class is ", node.label)
 
-    def query_tree(self, x):
+    def query_tree(self, x, returnErr=False):
         assert x.shape[0] == self.shape
 
         curr_node = self.root
@@ -115,6 +142,8 @@ class DecisionTree:
             else:
                 curr_node = curr_node.left
 
+        if returnErr:
+            return curr_node.err
         return curr_node.label
 
     def predict(self, X):
@@ -126,6 +155,7 @@ class DecisionTree:
     class DecNode:
         def __init__(self, is_leaf, label=None, tresh=None, feature=None, err=None):
             self.is_leaf = is_leaf
+            self.err = err
             self.left = None
             self.right = None
             if is_leaf:  # if it's a leaf set the label
@@ -133,7 +163,6 @@ class DecisionTree:
             else:  # if it's inner set infos
                 self.feature = feature  # feature evalued
                 self.tresh = tresh  # treshold
-                self.err = err  # impurity/gini
-
+                # self.err = err  # impurity/gini
 
 # %%

@@ -5,7 +5,7 @@ this includes for:
 - feature selection 
 - feature manipulation
 - validation & valutation
-- clustering
+- clustering & classification
 ___
 
 ## Provided Functions
@@ -97,9 +97,27 @@ dataset and label is an array with cluster labels
 
 ### Decision Tree Classifier
 
-this algorith is provided as a class.
+this algorithm is provided as a class.
 there are provided 3 main methods
 
 * *fit(data, labels, level)* : fit the tree, optional parameter level it's to set max tree height
 * *predict(data)* : return a numpy array of predictions
 * *print_tree()* : print the structure of the decision tree
+
+constructor:
+* *DecisionTree(errfun=gini, max_height=None, min_err=0)* : errfun could be entropy or gini, or a user defined error function. default is gini.
+  the other  two parameters are for pruning.
+
+### Random Forest Classifier
+
+this algorithm is provided as a class.
+there are 2 main methods, basically the same as DecisionTree.
+Random forests have a lower risk of overfitting.
+the training of the trees of the forest could be.
+
+constructor:
+* *RandomForest(n_trees, max_height=2, min_features, min_data, errfun, n_processes=1)*:
+  n_trees and max_height are the parameters of each tree. min_features and min_data are the minimum amount
+  of data/features given to each trees. default are the half of the shape of the dataset.
+  If errfun is not set each tree would hav a random errfun between gini and entropy.
+  n_process is for the parallel grow

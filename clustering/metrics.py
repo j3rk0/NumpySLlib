@@ -1,8 +1,4 @@
-# %% imports
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.datasets import load_iris
-from sklearn.metrics import silhouette_score
 
 
 def rand_index(clust, labels):

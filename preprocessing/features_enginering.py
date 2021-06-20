@@ -2,6 +2,15 @@ import numpy as np
 from valutation import cross_valid_A_micro
 
 
+def normalize_dataset(data):
+    n_features = data.shape[1]
+    for i in range(n_features):
+        f_max = np.max(data[:, i])
+        f_min = np.min(data[:, i])
+        data[:, i] = (data[:, i] - f_min) / (f_max - f_min)
+    return data
+
+
 # autoesplicative:
 
 def normalize_transform(to_normalize, column_index, max_value, min_value):
@@ -88,7 +97,8 @@ def forward_feature_insertion(data, model, labels, k):
             for k in range(nfeat):  # testo una features alla volta
                 modified_x = best_dataset
                 modified_x = np.column_stack((modified_x, data[:, k]))
-                accuracy = cross_valid_A_micro(modified_x, labels, 5, model)  # eseguo una validazione ad ogni inaerimento
+                accuracy = cross_valid_A_micro(modified_x, labels, 5,
+                                               model)  # eseguo una validazione ad ogni inaerimento
                 if accuracy > best_accuracy:  # se l'accuratezza è migliore, sostituisco il nuovo dataset nella lista
                     best_accuracy = accuracy
                     temp = modified_x

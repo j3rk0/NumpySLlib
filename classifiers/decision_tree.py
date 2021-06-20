@@ -20,8 +20,8 @@ class DecisionTree:
         self.root = None
         self.errfun = errfun
         self.height = 0
-        self.max_height = None
-        self.min_err = .0
+        self.max_height = max_height
+        self.min_err = min_err
         self.shape = None
 
     def __findSplit(self, data, labels):

@@ -1,7 +1,7 @@
 import time
 from multiprocessing import Pool
 import numpy as np
-from classifiers.decision_tree import gini, entropy, DecisionTree
+from models.decision_tree import gini, entropy, DecisionTree
 
 
 class RandomForest:

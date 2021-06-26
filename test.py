@@ -1,13 +1,15 @@
 import numpy as np
 from sklearn.datasets import load_wine
 from preprocessing.split import train_test_split
-from classifiers.decision_tree import DecisionTree
-from classifiers.random_forest import RandomForest
-from classifiers.knn import KNN
+from models.decision_tree import DecisionTree
+from models.random_forest import RandomForest
+from models.knn import KNN
 import valutation as val
 from preprocessing.features_enginering import normalize_dataset
 from sklearn.datasets import load_boston
 
+
+# %%
 
 def sqrderr(res, labels):
     err = 0
@@ -62,7 +64,14 @@ print("knn err: ", knn_err, " knn weig:", knn_w_err, " rf weighted: ", err_w, " 
 
 # %% CLASSIFICATION
 
-X, y = load_wine(return_X_y=True)
+import sklearn.ensemble as randfo
+import sklearn.tree  as tr
+import sklearn.neighbors as kn
+from sklearn.datasets import load_breast_cancer
+
+# X, y = load_wine(return_X_y=True)
+
+X, y = load_breast_cancer(return_X_y=True)
 
 normalize_dataset(X)
 x_train, y_train, x_test, y_test = train_test_split(X, y, .8)
@@ -70,23 +79,66 @@ x_train, y_train, x_test, y_test = train_test_split(X, y, .8)
 ## %%
 
 kclass = KNN(5, method="inverse")
+kclass_sk = kn.KNeighborsClassifier(n_neighbors=5, weights="distance")
 kclass.fit(x_train, y_train, )
+kclass_sk.fit(x_train, y_train)
 
 ## %%
 res = kclass.predict(x_test)
 knn_acc = val.A_micro_average(y_test, res)
-
+res = kclass_sk.predict(x_test)
+knn_sk_acc = val.A_micro_average(y_test, res)
 ## %%
 tree = DecisionTree()
+tree_sk = tr.DecisionTreeClassifier()
 tree.fit(x_train, y_train)
+tree_sk.fit(x_train, y_train)
+
 forest = RandomForest(50, 2, weighted=True, n_processes=4)
+forest_sk = randfo.RandomForestClassifier(n_estimators=50, max_depth=2)
 forest.fit(x_train, y_train)
+forest_sk.fit(x_train, y_train)
 
 ## %%
 
 forest_pred = forest.predict(x_test)
+forest_sk_pred = forest_sk.predict(x_test)
 tree_pred = tree.predict(x_test)
+tree_sk_pred = tree_sk.predict(x_test)
 forest_acc = val.A_micro_average(y_test, forest_pred)
+forest_sk_acc = val.A_micro_average(y_test, forest_sk_pred)
 tree_acc = val.A_micro_average(y_test, tree_pred)
+tree_sk_acc = val.A_micro_average(y_test, tree_sk_pred)
 
+print("jerkosl:")
 print("forest acc:", forest_acc, " tree acc:", tree_acc, " knn act: ", knn_acc)
+print("sklearn:")
+print("forest acc:", forest_sk_acc, " tree acc:", tree_sk_acc, " knn act: ", knn_sk_acc)
+
+# %%
+import numpy as np
+import matplotlib.pyplot as plt
+import valutation as val
+from preprocessing.features_enginering import normalize_dataset
+from preprocessing.split import train_test_split
+from sklearn.datasets import load_wine
+from models.LinearSVM import LinearSVM
+
+X, y = load_wine(return_X_y=True)
+
+normalize_dataset(X)
+x_train, y_train, x_test, y_test = train_test_split(X, y, .8)
+# %%
+
+svm = LinearSVM(n_class=3)
+svm.fit(x_train, y_train)
+#plt.scatter(x=err[:, 0], y=err[:, 1])
+#plt.show()
+
+
+# %%
+pred = svm.predict(x_test)
+
+# %%
+
+acc = val.A_micro_average(y_test, pred)

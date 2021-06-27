@@ -12,7 +12,7 @@ class BinaryLinearSVM:
     def fit(self, data, labels):
         n_sample, n_features = data.shape
         self.W = np.zeros(n_features + 1)
-        # add bias
+        # embed bias
         data = np.pad(data, ((0, 0), (0, 1)), constant_values=1)
         # hyperplane encoding
         labels[labels == 0] = -1
@@ -38,25 +38,24 @@ class BinaryLinearSVM:
 
     def predict(self, data):
         ret = []
-        data = np.pad(data, ((0, 0), (0, 1)), constant_values=1)
+        data = np.pad(data, ((0, 0), (0, 1)), constant_values=1)  # embed bias
         for x in data:
             ret.append(self.query_svm(x))
         return np.array(ret)
 
 
 class LinearSVM:
-    def __init__(self, n_class, max_epochs=1000, learn_rate=1, approach="one-all"):
-        assert n_class > 2
-        self.n_class = n_class
+    def __init__(self, max_epochs=1000, learn_rate=1):
+        self.n_class = None
         self.max_epochs = max_epochs
         self.learn_rate = learn_rate
-        self.approach = approach
         self.data = None
-        self.labels = [None] * n_class
-        self.SVMs = []
+        self.labels = None
+        self.SVMs = None
         return
 
     def fit(self, data, labels):
+        self.n_class = np.max(labels) + 1
         self.data = data
         self.labels = labels
         self.SVMs = Pool(processes=self.n_class).map(self.fit_a_svm, range(self.n_class))

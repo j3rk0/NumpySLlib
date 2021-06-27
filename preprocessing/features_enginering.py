@@ -1,5 +1,5 @@
 import numpy as np
-from valutation import cross_valid_A_micro
+from validation.classification import cross_valid_A_micro
 
 
 def normalize_dataset(data):

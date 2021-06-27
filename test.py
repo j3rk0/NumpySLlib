@@ -1,21 +1,12 @@
-import numpy as np
-from sklearn.datasets import load_wine
-from preprocessing.split import train_test_split
-from models.decision_tree import DecisionTree
-from models.random_forest import RandomForest
-from models.knn import KNN
-import valutation as val
-from preprocessing.features_enginering import normalize_dataset
 from sklearn.datasets import load_boston
 
-
-# %%
-
-def sqrderr(res, labels):
-    err = 0
-    for i in range(len(labels)):
-        err += np.absolute(res[i] - labels[i])
-    return err / len(labels)
+from validation import classification as val
+from models.decision_tree import DecisionTree
+from models.knn import KNN
+from models.random_forest import RandomForest
+from preprocessing.features_enginering import normalize_dataset
+from preprocessing.split import train_test_split
+from validation.regression import sqrderr
 
 
 # %%
@@ -60,7 +51,7 @@ tree.fit(x_train, y_train)
 res = tree.predict(x_test)
 err_tree = sqrderr(res, y_test)
 
-print("knn err: ", knn_err, " knn weig:", knn_w_err, " rf weighted: ", err_w, " rf:", err, " tree:", err_tree)
+print(f"knn err:  {knn_err} knn weig: {knn_w_err} rf weighted: {err_w} rf: {err} tree: {err_tree}")
 
 # %% CLASSIFICATION
 
@@ -111,14 +102,13 @@ tree_acc = val.A_micro_average(y_test, tree_pred)
 tree_sk_acc = val.A_micro_average(y_test, tree_sk_pred)
 
 print("jerkosl:")
-print("forest acc:", forest_acc, " tree acc:", tree_acc, " knn act: ", knn_acc)
+print(f"forest acc: {forest_acc}  tree acc: {tree_acc}  knn act:  {knn_acc}")
 print("sklearn:")
-print("forest acc:", forest_sk_acc, " tree acc:", tree_sk_acc, " knn act: ", knn_sk_acc)
+print(f"forest acc: {forest_sk_acc} tree acc: {tree_sk_acc} knn act:  {knn_sk_acc}")
 
 # %%
 import numpy as np
-import matplotlib.pyplot as plt
-import valutation as val
+import validation.classification as val
 from preprocessing.features_enginering import normalize_dataset
 from preprocessing.split import train_test_split
 from sklearn.datasets import load_wine
@@ -130,7 +120,7 @@ normalize_dataset(X)
 x_train, y_train, x_test, y_test = train_test_split(X, y, .8)
 # %%
 
-svm = LinearSVM(n_class=3)
+svm = LinearSVM()
 svm.fit(x_train, y_train)
 #plt.scatter(x=err[:, 0], y=err[:, 1])
 #plt.show()
@@ -142,3 +132,4 @@ pred = svm.predict(x_test)
 # %%
 
 acc = val.A_micro_average(y_test, pred)
+print(f'svm accuracy: {acc}')

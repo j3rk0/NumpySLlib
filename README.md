@@ -1,11 +1,11 @@
 # NumpySLlib
 
-A collection of hand-made statistical learning algorithms built with numpy.  
-this includes for:
-- feature selection 
-- feature manipulation
-- validation & valutation
-- clustering & classification
+A collection of hand-made statistical learning models and tools built in plain numpy.  
+this package includes:
+- classification and regression models (knn, decision tree, svm and random forest)
+- clustering models (kmeans, and agglomerative clustering)  
+- preprocessing functions (feature selection, feature manipulation, splitting)
+- validation metrics for clustering, classification and regression and confusion matrixes
 ___
 
 ## Documentation:

@@ -8,7 +8,6 @@ from preprocessing.features_enginering import normalize_dataset
 from preprocessing.split import train_test_split
 from validation.regression import sqrderr
 
-
 # %%
 X, y = load_boston(return_X_y=True)
 normalize_dataset(X)
@@ -107,29 +106,36 @@ print("sklearn:")
 print(f"forest acc: {forest_sk_acc} tree acc: {tree_sk_acc} knn act:  {knn_sk_acc}")
 
 # %%
-import numpy as np
-import validation.classification as val
+
+from sklearn.datasets import load_wine
+from sklearn.datasets import load_breast_cancer
+from sklearn.datasets import make_blobs
+from models.svm import SVM
+import matplotlib.pyplot as plt
+from validation.classification import A_micro_average
 from preprocessing.features_enginering import normalize_dataset
 from preprocessing.split import train_test_split
-from sklearn.datasets import load_wine
-from models.LinearSVM import LinearSVM
 
-X, y = load_wine(return_X_y=True)
-
-normalize_dataset(X)
+#X, y = load_wine(return_X_y=True)
+X = make_blobs(1000,centers=3)
+y = X[1]
+X = X[0]
+#normalize_dataset(X)
 x_train, y_train, x_test, y_test = train_test_split(X, y, .8)
-# %%
+plt.scatter(x=X[:,0],y=X[:,1],c=y)
+plt.show()
 
-svm = LinearSVM()
+# %%
+svm = SVM(C=1)
 svm.fit(x_train, y_train)
-#plt.scatter(x=err[:, 0], y=err[:, 1])
-#plt.show()
-
-
-# %%
-pred = svm.predict(x_test)
 
 # %%
 
-acc = val.A_micro_average(y_test, pred)
-print(f'svm accuracy: {acc}')
+res = svm.predict(x_test)
+A = A_micro_average(y_test, res)
+
+#%%
+
+from mlxtend.plotting import  plot_decision_regions
+plot_decision_regions(X=X,y=y,clf=svm)
+plt.show()

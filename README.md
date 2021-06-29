@@ -3,7 +3,7 @@
 A collection of hand-made statistical learning models and tools built in plain numpy.  
 this package includes:
 - classification and regression models (knn, decision tree, svm and random forest)
-- clustering models (kmeans, and agglomerative clustering)  
+- clustering models (kmeans and agglomerative clustering)  
 - preprocessing functions (feature selection, feature manipulation, splitting)
 - validation metrics for clustering, classification and regression and confusion matrixes
 ___
@@ -53,14 +53,24 @@ Constructor have the following signature:
     number of neighbours, mode is classification or regression. method can be standard
    or inverse. for inverse voting you can also edit smoothing parameter
    
-#### Linear SVM
+#### SVM
 
-Support vector machines are the most used linear predictors. here i used sgd algorithm
-for the training.
-There are two class for this implementation of Linear SVM. the BinaryLinearSVM support only
-2 class classification. The LinearSVM indeed work for every number of class.
-multiclass svm use one-vs-all approach.
-The constructors take only two parameters: epoch number and learn rate.
+Support vector machines are the most used linear predictors. 
+I implemented both linear svm, using standard gradient descebd, both kernel svm, using 
+dual gradient descend for the training.
+Internally, if more then 2 class are provided, the SVM use a use one-vs-rest multiclass approach.
+A lot of different kernels ar shipped:
+linear, rbf, gaussian, polynomial, gaussian, exponentioal, laplacian, anova and sigmoid
+
+parameters for constructor are:
+- learn_rate = 0.1
+- epochs = 2000
+- C = None
+- kernel = "rbf"
+- pow = 4 used for 
+- gamma = 1/n_features used for rbf, poly (intercept), gauss-exp-laplace (sigma), anova (multiplier)
+- deg = 2 used for poly-anova (polynomial degree), sig (multiplier)
+
 The training of each svm in multiclass is done in multiprocessing
 
 #### KMeans

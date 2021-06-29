@@ -56,10 +56,11 @@ Constructor have the following signature:
 #### SVM
 
 Support vector machines are the most used linear predictors. 
-I implemented both linear svm, using standard gradient descebd, both kernel svm, using 
-dual gradient descend for the training.
-Internally, if more then 2 class are provided, the SVM use a use one-vs-rest multiclass approach.
+I implemented both linear and kernel svm. for the trained i used standard gradient descend for linear and
+dual gradient descend for kernel.
+Internally, if more then 2 class are provided, the SVM use a use one-vs-rest approach.
 A lot of different kernels ar shipped:
+
 linear, rbf, gaussian, polynomial, gaussian, exponentioal, laplacian, anova and sigmoid
 
 parameters for constructor are:
